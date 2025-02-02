@@ -1,21 +1,8 @@
-# Modules de base
 streamlit
-pandas
-numpy
-python-dateutil  # Gestion des dates
-
-# Google API
 google-auth
 google-auth-oauthlib
 google-auth-httplib2
 google-auth-transport-requests
 google-api-python-client
-
-# Gestion des fichiers et environnement
-python-dotenv  # Chargement des variables d'environnement
-
-# Authentification
-streamlit-authenticator
-
-# Sécurité et SSL
 requests
+python-dotenv
