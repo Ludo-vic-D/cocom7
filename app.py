@@ -158,9 +158,10 @@ def upload_photo_to_drive(service, photo_file):
         st.error(f"Erreur lors de l'upload : {e}")
         return None
 
-def get_drive_image_url(file_id, size=400):
-    """Génère un lien d'image Google Drive qui fonctionne mieux sur mobile."""
-    return f"https://lh3.googleusercontent.com/d/{file_id}=w{size}"
+def get_drive_image_url(file_id, size=300):
+    """Génère un lien Google Drive pour afficher une image avec la taille souhaitée."""
+    return f"https://drive.google.com/thumbnail?id={file_id}&sz=w{size}"
+
 
 
 def compute_gains(prix_achat, prix_vente, tax_rate=TAX_RATE):
