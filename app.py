@@ -8,11 +8,6 @@ import base64
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload
-import json
-
-from google.auth.transport.requests import Request
-
-from dotenv import load_dotenv
 
 # Authentification (exemple simplifié)
 import streamlit_authenticator as stauth
@@ -23,45 +18,6 @@ import ssl
 
 from google.auth.transport.requests import AuthorizedSession
 from google.oauth2 import service_account
-
-
-# Charger les variables d'environnement en local
-load_dotenv()
-
-@st.cache_resource
-def init_gdrive():
-    """
-    Initialise la connexion Google Drive via un compte de service avec un contexte SSL sécurisé.
-    """
-
-    # 📜 Récupération des credentials depuis les variables d'environnement
-    service_account_info = json.loads(os.getenv("GCP_SERVICE_ACCOUNT_JSON", "{}"))
-
-    if not service_account_info:
-        st.error("Erreur : Aucun credentials GCP trouvés !")
-        return None
-
-    credentials = service_account.Credentials.from_service_account_info(
-        service_account_info,
-        scopes=["https://www.googleapis.com/auth/drive"]
-    )
-
-    # 🔄 Création d'une session avec le contexte SSL
-    session = requests.Session()
-    adapter = requests.adapters.HTTPAdapter()
-    session.mount("https://", adapter)
-
-    # 🔄 Application de la session aux credentials Google
-    credentials.refresh(Request(session))  # Rafraîchit les tokens avec cette session
-
-    # 📂 Création du service Google Drive avec les credentials mis à jour
-    return build("drive", "v3", credentials=credentials)
-
-# Tester la connexion
-drive_service = init_gdrive()
-if drive_service:
-    st.success("Connexion à Google Drive réussie ! 🚀")
-
 
 # ============================
 # === CONFIGURATION GLOBALE ==
@@ -74,12 +30,8 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Récupérer les e-mails autorisés depuis les variables d'environnement
-allowed_emails_str = os.getenv("ALLOWED_EMAILS", "")  # Par défaut, une chaîne vide si non défini
-
-# Transformer la chaîne en liste (séparée par des virgules)
-ALLOWED_EMAILS = [email.strip() for email in allowed_emails_str.split(",") if email.strip()]
-
+# Récupération des e-mails autorisés depuis les secrets
+ALLOWED_EMAILS = st.secrets["auth"]["allowed_emails"]
 
 # ID du dossier Google Drive où stocker CSV et photos
 GOOGLE_DRIVE_FOLDER_ID = "1dRCYxhWB15-dSpwklt1HAYJnc6zP5R7y"
@@ -106,28 +58,31 @@ from google.auth.transport.requests import Request
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 
-# @st.cache_resource
-# def init_gdrive():
-#     """
-#     Initialise la connexion Google Drive via un compte de service avec un contexte SSL sécurisé.
-#     """
+@st.cache_resource
+def init_gdrive():
+    """
+    Initialise la connexion Google Drive via un compte de service avec un contexte SSL sécurisé.
+    """
+    # 🔒 Création d'un contexte SSL sécurisé
+    ssl_context = ssl.create_default_context()
+    ssl_context.options |= ssl.OP_NO_TLSv1 | ssl.OP_NO_TLSv1_1  # Désactive TLS 1.0 et 1.1
 
-#     # 📜 Chargement des credentials du compte de service
-#     credentials = service_account.Credentials.from_service_account_info(
-#         st.secrets["gcp_service_account"],
-#         scopes=["https://www.googleapis.com/auth/drive"]
-#     )
+    # 📜 Chargement des credentials du compte de service
+    credentials = service_account.Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"],
+        scopes=["https://www.googleapis.com/auth/drive"]
+    )
 
-#     # 🔄 Création d'une session avec le contexte SSL
-#     session = requests.Session()
-#     adapter = requests.adapters.HTTPAdapter()
-#     session.mount("https://", adapter)
+    # 🔄 Création d'une session avec le contexte SSL
+    session = requests.Session()
+    adapter = requests.adapters.HTTPAdapter()
+    session.mount("https://", adapter)
 
-#     # 🔄 Application de la session aux credentials Google
-#     credentials.refresh(Request(session))  # Rafraîchit les tokens avec cette session
+    # 🔄 Application de la session aux credentials Google
+    credentials.refresh(Request(session))  # Rafraîchit les tokens avec cette session
 
-#     # 📂 Création du service Google Drive avec les credentials mis à jour
-#     return build("drive", "v3", credentials=credentials)
+    # 📂 Création du service Google Drive avec les credentials mis à jour
+    return build("drive", "v3", credentials=credentials)
 
 
 
