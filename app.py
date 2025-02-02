@@ -423,14 +423,30 @@ def article_details(drive, df_stock, article_id):
         date_vente = st.date_input("Date de vente", datetime.date.today())
 
         # 🔍 Vérification du chargement des comptes de vente
-        df_comptes = download_csv_from_drive(drive, CSV_SALES_ACCOUNT_FILENAME)  # Correction ici !
-
+        # Chargement du CSV des comptes de vente
+        df_comptes = download_csv_from_drive(drive, CSV_SALES_ACCOUNT_FILENAME)
+        
+        # Vérifier si le DataFrame est vide ou si la colonne "compte" n'existe pas
         if df_comptes.empty or "compte" not in df_comptes.columns:
-            st.info("Aucun compte de vente défini. Ajoute-en dans le CSV comptes_de_vente.csv")
-            compte_vente = st.text_input("Compte de vente (manuellement)")
-        else:
-            comptes_list = df_comptes["compte"].dropna().unique().tolist()
-            compte_vente = st.selectbox("Compte de vente", comptes_list)
+            # On crée un DataFrame par défaut
+            default_comptes = [
+                "vestiaire coco",
+                "vestiaire ludo",
+                "vestiaire carine",
+                "vestiaire michelle",
+                "vestiaire pro",
+                "vestiaire persephone"
+            ]
+            df_comptes = pd.DataFrame({"compte": default_comptes})
+            
+            # On sauvegarde ce nouveau CSV sur Drive
+            upload_csv_to_drive(drive, CSV_SALES_ACCOUNT_FILENAME, df_comptes)
+            st.info("Aucun compte de vente n'était défini : un CSV par défaut a été créé.")
+        
+        # Maintenant, on peut directement utiliser df_comptes
+        comptes_list = df_comptes["compte"].dropna().unique().tolist()
+        compte_vente = st.selectbox("Compte de vente", comptes_list)
+
 
         # ✅ Bouton pour valider la vente
         if st.button("✅ Valider la vente"):
