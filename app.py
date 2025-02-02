@@ -332,7 +332,7 @@ def page_consultation_stock(drive, df_stock):
     for index, row in df_filtered.iterrows():
         col = cols[index % num_cols]  # Répartition équilibrée dans les colonnes
         with col:
-            st.image(get_drive_image_url(row["photo_id"], size=700), use_column_width=True)  # Image de l'article
+            st.image(get_drive_image_url(row["photo_id"], size=700), use_container_width=True)  # Image de l'article
             st.markdown(f"**{row['description']}**")
             st.markdown(f"📏 **Taille :** {row['taille']}")
             st.markdown(f"👜 **Collection :** {row['collection']}")
@@ -379,7 +379,7 @@ def article_details(drive, df_stock, article_id):
         # 📷 Affichage de l'image
         if pd.notna(row["photo_id"]):
             image_url = get_drive_image_url(row["photo_id"], size=700)  # Taille ajustable
-            st.image(image_url, caption="Image de l'article", use_column_width=True)
+            st.image(image_url, caption="Image de l'article", use_container_width=True)
         else:
             st.warning("Aucune image disponible.")
 
