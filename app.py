@@ -379,9 +379,10 @@ def article_details(drive, df_stock, article_id):
     with col1:
         # 📷 Affichage de l'image
         if pd.notna(row["photo_id"]):
-            image_url = get_drive_image_url(row["photo_id"], size=700)  # Taille ajustable
-            st.image(image_url, caption="Image de l'article")
-                    #  , use_container_width=True)
+            image_url = get_drive_image_url(row["photo_id"], size=300)
+            # 📌 Remplace `st.image()` par `st.markdown()`
+            st.markdown(f'<img src="{image_url}" width="100%">', unsafe_allow_html=True)
+
         else:
             st.warning("Aucune image disponible.")
 
