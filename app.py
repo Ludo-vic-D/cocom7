@@ -20,7 +20,7 @@ from google.auth.transport.requests import AuthorizedSession
 from google.oauth2 import service_account
 
 # ============================
-# === CONFIGURATION GLOBALE ==
+# === CONFIGURATION GLOBALEs ==
 # ============================
 
 # Pour un affichage plus adapté mobile
